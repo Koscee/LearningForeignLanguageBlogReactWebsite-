@@ -5,6 +5,7 @@ import PageTopSection from '../components/article/TopSection';
 // import ContentSection from '../components/article/ContentSection';
 import RelatedPost from '../components/article/RelatedPost';
 import comments from '../__mocks__/comments';
+// import postItems from '../__mocks__/posts';
 
 const ArticlePage = () => (
   <>

@@ -9,17 +9,20 @@ const MainGridLayout = (props) => {
   return (
     <Grid container justifyContent="space-between" spacing={1}>
       {
-        postItems.map((postItem) => (
-          <Grid item lg={4} md={6} sm={12} xs={12} key={postItem.title}>
-            <SimpleCard
-              title={postItem.title}
-              image={postItem.image}
-              description={postItem.content}
-              imageHeight={220}
-              href="/article"
-            />
-          </Grid>
-        ))
+        postItems.length > 0
+          ? postItems.map((postItem) => (
+            <Grid item lg={4} md={6} sm={12} xs={12} key={postItem.id}>
+              <SimpleCard
+                href={`/article/${postItem.id}`}
+                title={postItem.title}
+                image={postItem.coverImage}
+                description={postItem.content}
+                createdAt={postItem.createdAt}
+                imageHeight={220}
+              />
+            </Grid>
+          ))
+          : null
     }
 
       {/* <CardWithAvatar

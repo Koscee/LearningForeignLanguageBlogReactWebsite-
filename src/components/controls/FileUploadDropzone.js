@@ -91,7 +91,7 @@ const convertToImageDataParam = (name, value) => ({
 
 function UploadField(props) {
   const {
-    name, onAdd, onDelete, error = null, ...others
+    name, onAdd, onDelete, imgData, error = null, ...others
   } = props;
 
   const [fileObjects, setFileObjects] = useState([]);
@@ -99,7 +99,7 @@ function UploadField(props) {
 
   return (
     <TextField
-      sx={customStyles(data).dropzone}
+      sx={customStyles(imgData || data).dropzone}
       fullWidth
       required
       name={name}
@@ -142,6 +142,7 @@ FileUploadDropzone.propTypes = {
 UploadField.propTypes = {
   name: PropTypes.string.isRequired,
   error: PropTypes.string,
+  imgData: PropTypes.any,
   onAdd: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired
 };

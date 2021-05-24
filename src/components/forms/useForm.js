@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core';
 
 export function useForm(initialValues) {
   const [values, setValues] = useState(initialValues);
-  const [errors, setErrors] = useState({});
+  const [formErrors, setFormErrors] = useState({});
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -16,14 +16,14 @@ export function useForm(initialValues) {
 
   const resetForm = () => {
     setValues(initialValues);
-    setErrors({});
+    setFormErrors({});
   };
 
   return {
     values,
     setValues,
-    errors,
-    setErrors,
+    formErrors,
+    setFormErrors,
     handleInputChange,
     resetForm
   };

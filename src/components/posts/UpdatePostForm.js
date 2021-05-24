@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 // import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -11,7 +11,7 @@ import {
 import Controls from '../controls/Controls';
 import customStyles from '../forms/LoginRegisterFormStyles';
 import { useForm, Form } from '../forms/useForm';
-import { createPost } from '../../actions/postActions';
+import { getPost, createPost } from '../../actions/postActions';
 
 const useStyles = makeStyles((theme) => (customStyles(theme)));
 const shadow = '-1px -1px 10px 2px rgba(0, 0, 0, 0.25)';
@@ -35,19 +35,29 @@ const categories = [
 ];
 const initialValues = {
   title: '',
-  categoryName: categories[0].title,
+  categoryName: categories[2].title,
   coverImage: '',
   content: '',
 };
 
-const AddPostForm = (props) => {
-  const { errors } = props;
+const UpdatePostForm = (props) => {
+  const { post, errors } = props;
   const classes = useStyles();
   const navigate = useNavigate();
 
   const {
-    values, formErrors, setFormErrors, handleInputChange,
+    values, formErrors, setValues, setFormErrors, handleInputChange,
   } = useForm(initialValues);
+
+  const { id } = useParams();
+
+  useEffect(() => {
+    props.getPost(id, navigate);
+  }, [getPost]);
+
+  useEffect(() => {
+    setValues({ ...values, ...post });
+  }, [post]);
 
   useEffect(() => {
     setFormErrors(errors);
@@ -55,8 +65,10 @@ const AddPostForm = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (values.content === '<p><br></p>') {
+      values.content = '';
+    }
     props.createPost(values, navigate);
-    // console.log('history', navigate);
     // console.log(values);
   };
 
@@ -68,48 +80,54 @@ const AddPostForm = (props) => {
       >
         <Grid container justifyContent="center" sx={{ py: 5, }}>
           <Typography component="h1" variant="h3" color="primary.light">
-            CREATE&nbsp;NEW&nbsp;POST
+            UPDATE&nbsp;POST
           </Typography>
         </Grid>
         <CardContent>
+          <Grid sx={{ display: 'none' }}>
+            <Controls.Input
+              required
+              disabled
+              name="id"
+              id="postId"
+              label="postId"
+              type="hidden"
+              value={`${values.id}`}
+            />
+          </Grid>
           <Grid
             container
             spacing={5}
           >
             <Grid item xs={12}>
               <Controls.Input
-                autoFocus
-                required
+                disabled
                 name="title"
                 id="postTitle"
                 label="Post Title"
                 error={formErrors.title}
                 value={values.title}
                 onChange={handleInputChange}
+                sx={{ backgroundColor: '#fafafa' }}
               />
             </Grid>
 
             <Grid item xs={12}>
               <Controls.Select
+                disabled
                 name="categoryName"
                 label="Category Name"
                 value={values.categoryName}
                 options={categories}
                 onChange={handleInputChange}
+                sx={{ backgroundColor: '#fafafa' }}
               />
             </Grid>
 
             <Grid item xs={12}>
-              {/* <Controls.Input
-                name="coverImage"
-                id="coverImage"
-                label="Cover Image"
-                error={errors.coverImage}
-                value={values.coverImage}
-                onChange={handleInputChange}
-              /> */}
               <Controls.ImageDropzone
                 name="coverImage"
+                imgData={values.coverImage}
                 onAdd={handleInputChange}
                 onDelete={handleInputChange}
                 error={formErrors.coverImage}
@@ -117,15 +135,6 @@ const AddPostForm = (props) => {
             </Grid>
 
             <Grid item xs={12} sx={textEditorParentGridStyles}>
-              {/* <Controls.Input
-                required
-                name="content"
-                id="content"
-                label="content"
-                error={errors.content}
-                value={values.content}
-                onChange={handleInputChange}
-              /> */}
               <Controls.TextEditor // remember to fix it as part of the form data on submit
                 name="content"
                 value={values.content}
@@ -137,7 +146,7 @@ const AddPostForm = (props) => {
             <Grid container item xs={12} justifyContent="flex-end">
               <Controls.Buttons.Button
                 sx={buttonStyles}
-                text="CREATE"
+                text="UPDATE"
                 // size="large"
                 type="submit"
               />
@@ -149,13 +158,16 @@ const AddPostForm = (props) => {
   );
 };
 
-AddPostForm.propTypes = {
+UpdatePostForm.propTypes = {
   createPost: PropTypes.func.isRequired,
+  getPost: PropTypes.func.isRequired, // gets a single post
+  post: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
+  post: state.post.post,
   errors: state.errors
 });
 
-export default connect(mapStateToProps, { createPost })(AddPostForm);
+export default connect(mapStateToProps, { getPost, createPost })(UpdatePostForm);

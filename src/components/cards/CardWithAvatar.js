@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 // import { Typography, Avatar, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import dateFormat from 'dateformat';
 import CardItem from './CardItem';
 import CardFooter from './CardFooter';
 import cardStyles from './CardStyles';
@@ -37,7 +38,7 @@ const CardWithAvatar = (props) => {
         <InfoAvatar
           authorName={authorName}
           authorProfilePic={authorProfilePic}
-          publishedDate={publishedDate}
+          publishedDate={dateFormat(publishedDate, 'mmm dS, yyyy')}
         />
         {/* <Grid item>
           <Avatar

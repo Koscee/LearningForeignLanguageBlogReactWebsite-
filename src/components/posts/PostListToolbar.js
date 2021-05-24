@@ -18,7 +18,7 @@ const PostListToolbar = (props) => (
       }}
     >
       <Controls.Buttons.CreateButton
-        href="/app/posts/addpost"
+        href="/app/posts/addPost"
         text="ADD NEW POST"
       />
     </Box>

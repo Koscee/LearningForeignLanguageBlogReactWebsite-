@@ -4,6 +4,7 @@ import {
   Avatar, Typography, Grid, Box,
   Container
 } from '@material-ui/core';
+import dateFormat from 'dateformat';
 import chatStyles from './Chat';
 
 const AuthorInfo = (props) => {
@@ -35,7 +36,7 @@ const AuthorInfo = (props) => {
           color="textDefault"
           component="p"
         >
-          {`${authorName} | ${publishedDate}`}
+          {`${authorName} | ${dateFormat(publishedDate, 'mmm dS, yyyy')}`}
         </Typography>
         )
       }

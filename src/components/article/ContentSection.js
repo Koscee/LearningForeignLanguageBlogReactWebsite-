@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   makeStyles, Grid, Typography, Container,
   Card,
@@ -9,12 +10,13 @@ import {
 // import InfoAvatar from '../InfoAvatar';
 import CommentIcon from '@material-ui/icons/Comment';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-import content from '../../__mocks__/content';
+// import content from '../../__mocks__/content';
 import AuthorInfo from './AuthorInfo';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     // background: 'pink',
+    flexDirection: 'column',
     width: '75%',
     [theme.breakpoints.down('md')]: {
       width: '90%',
@@ -42,21 +44,31 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: 'none',
     '& .MuiTypography-root': {
       lineHeight: '1.8',
-      fontSize: '1.2rem',
+      fontSize: '1.09rem',
       textAlign: 'justify',
       //   fontWeight: theme.typography.fontWeightRegular,
       color: theme.palette.grey[700]
     },
-    '& img': {
-      display: 'block',
-      maxHeight: 500,
-      maxWidth: '100%',
-      margin: '35px auto'
+    '& p': {
+      margin: 0,
     },
+    '& p > img': {
+      display: 'block',
+      maxHeight: '500px',
+      maxWidth: '100%',
+      margin: '10px auto'
+    },
+    '& iframe': {
+      display: 'block',
+      height: '400px',
+      width: '100%',
+      margin: '15px auto'
+    }
   }
 }));
 
-const ContentSection = () => {
+const ContentSection = (props) => {
+  const { post } = props;
   const classes = useStyles();
   const [isliked, setIsLiked] = useState(false);
   const [displayComment, setDisplayComment] = useState(false);
@@ -67,14 +79,14 @@ const ContentSection = () => {
         <Grid className={classes.headerContainer}>
           <Grid item>
             <Typography variant="h2" align="left" className={classes.titleText}>
-              Post1 Title
+              {post.title}
             </Typography>
           </Grid>
           <Grid item>
             <AuthorInfo
               authorName="Anabell James"
               authorProfilePic="/static/images/avatars/avatar_3.png"
-              publishedDate="Feb 6th, 2021"
+              publishedDate={post.createdAt}
               isTitle
             />
           </Grid>
@@ -83,10 +95,10 @@ const ContentSection = () => {
       <Grid item>
         <Card className={classes.card}>
           <Container maxWidth="lg">
-            <Typography variant="body1" align="justify">
-              {content}
-              <img alt="testImg" src="/static/images/coverImg.jpg" />
-              {content}
+            <Typography variant="body1" align="justify" dangerouslySetInnerHTML={{ __html: post.content }}>
+              {/* {post.content} */}
+              {/* <img alt="testImg" src="/static/images/coverImg.jpg" />
+              {content} */}
             </Typography>
             <Box sx={{ paddingTop: 6 }}>
               <IconButton onClick={() => setIsLiked(!isliked)}>
@@ -101,6 +113,10 @@ const ContentSection = () => {
       </Grid>
     </Grid>
   );
+};
+
+ContentSection.propTypes = {
+  post: PropTypes.object.isRequired,
 };
 
 export default ContentSection;

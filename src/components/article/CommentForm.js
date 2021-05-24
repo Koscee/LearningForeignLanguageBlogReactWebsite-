@@ -41,7 +41,7 @@ const initialValues = {
 const CommentForm = () => {
   const classes = useStyles();
   const {
-    values, errors, handleInputChange,
+    values, formErrors, handleInputChange,
   } = useForm(initialValues);
 
   const handleSubmit = (e) => {
@@ -61,7 +61,7 @@ const CommentForm = () => {
         placeholder="Type your comment here"
         name="comment"
         id="comment"
-        error={errors.comment}
+        error={formErrors.comment}
         value={values.comment}
         onChange={handleInputChange}
       />

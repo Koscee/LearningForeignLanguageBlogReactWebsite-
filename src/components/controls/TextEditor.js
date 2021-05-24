@@ -95,7 +95,12 @@ const CustomTextEditor = React.forwardRef((props, inputRef) => {
         theme="snow"
         // formats={formats}
         placeholder="Type your content here"
-        onChange={(e) => onChange(convertToTextEditorParam(name, e))}
+        onChange={(newValue, delta, source) => {
+          if (source === 'user') {
+            onChange(convertToTextEditorParam(name, newValue));
+            // console.log(source);
+          }
+        }}
         onFocus={onEditorFocus}
         onBlur={onEditorBlur}
       />

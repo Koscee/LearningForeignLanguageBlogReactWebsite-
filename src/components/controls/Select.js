@@ -6,7 +6,7 @@ import {
 
 export default function Select(props) {
   const {
-    name, variant, label, value, error = null, onChange, options
+    name, variant, label, value, error = null, onChange, options, ...other
   } = props;
 
   return (
@@ -21,6 +21,7 @@ export default function Select(props) {
         name={name}
         value={value}
         onChange={onChange}
+        {...other}
       >
         {/* <MenuItem value="">None</MenuItem> */}
         {

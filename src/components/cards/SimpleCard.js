@@ -4,6 +4,7 @@ import { Box, Typography, Button } from '@material-ui/core';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import { makeStyles } from '@material-ui/core/styles';
 import { useNavigate } from 'react-router';
+import dateFormat from 'dateformat';
 import CardItem from './CardItem';
 import CardFooter from './CardFooter';
 import cardStyles from './CardStyles';
@@ -13,7 +14,7 @@ const useStyles = makeStyles((theme) => (cardStyles(theme)));
 
 const SimpleCard = (props) => {
   const {
-    title, description, image, imageHeight, href, ...other
+    title, description, image, createdAt, imageHeight, href, ...other
   } = props;
   const classes = useStyles();
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const SimpleCard = (props) => {
       >
         <Box className={classes.postTime}>
           <Typography variant="subtitle2" color="textSecondary" component="p" fontSize="0.78rem">
-            Posted on Febuary 6th 2021
+            {`Posted on ${dateFormat(createdAt, 'mmmm dS, yyyy')}`}
           </Typography>
         </Box>
         <Box className={classes.button}>
@@ -59,6 +60,7 @@ SimpleCard.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
   image: PropTypes.string.isRequired,
+  createdAt: PropTypes.string.isRequired,
   imageHeight: PropTypes.number.isRequired,
   href: PropTypes.string.isRequired
 };

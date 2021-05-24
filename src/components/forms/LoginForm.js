@@ -22,7 +22,7 @@ export default function LoginForm() {
   const classes = useStyles();
 
   const {
-    values, errors, handleInputChange,
+    values, formErrors, handleInputChange,
   } = useForm(initialValues);
 
   const handleSubmit = (e) => {
@@ -59,7 +59,7 @@ export default function LoginForm() {
                     label="Username"
                     autoComplete="username"
                     value={values.username}
-                    error={errors.username}
+                    error={formErrors.username}
                     onChange={handleInputChange}
                   />
                 </Grid>
@@ -73,7 +73,7 @@ export default function LoginForm() {
                     autoComplete="current-password"
                     type="password"
                     value={values.password}
-                    error={errors.password}
+                    error={formErrors.password}
                     onChange={handleInputChange}
                   />
                 </Grid>

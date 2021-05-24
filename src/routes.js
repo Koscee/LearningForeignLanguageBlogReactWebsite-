@@ -13,6 +13,7 @@ import AddUser from 'src/pages/AddUser';
 import AddPost from 'src/pages/AddPost';
 import Home from './pages/Home';
 import ArticlePage from './pages/Article';
+import UpdatePost from './pages/UpdatePost';
 
 const routes = [
   {
@@ -22,10 +23,11 @@ const routes = [
       { path: 'account', element: <Account /> },
       { path: 'users', element: <UserList />, },
       { path: 'users/adduser', element: <AddUser /> },
-      { path: 'posts/addpost', element: <AddPost /> },
+      { path: 'posts/addPost', element: <AddPost /> },
+      { path: 'posts/updatePost/:id', element: <UpdatePost /> },
       { path: 'dashboard', element: <Dashboard /> },
       { path: 'posts', element: <PostList /> },
-      { path: '*', element: <Navigate to="/404" /> }
+      // { path: '*', element: <Navigate to="/404" /> }
     ]
   },
   {
@@ -42,7 +44,7 @@ const routes = [
     element: <MainLayout />,
     children: [
       { path: 'home', element: <Home /> },
-      { path: 'article', element: <ArticlePage /> },
+      { path: 'article/:id', element: <ArticlePage /> },
       { path: 'categories', element: <Category /> },
       { path: '404', element: <NotFound /> },
       { path: '/', element: <Navigate to="/app/dashboard" /> },

@@ -45,7 +45,7 @@ const initialValues = {
 const AccountProfileDetails = () => {
   const classes = useStyles();
   const {
-    values, errors, handleInputChange,
+    values, formErrors, handleInputChange,
   } = useForm(initialValues);
 
   const handleSubmit = (e) => {
@@ -112,7 +112,7 @@ const AccountProfileDetails = () => {
                 id="firstName"
                 label="First Name"
                 autoComplete="fname"
-                error={errors.firstName}
+                error={formErrors.firstName}
                 value={values.firstName}
                 onChange={handleInputChange}
               />
@@ -126,7 +126,7 @@ const AccountProfileDetails = () => {
                 id="lastName"
                 label="Last Name"
                 autoComplete="lname"
-                error={errors.lastName}
+                error={formErrors.lastName}
                 value={values.lastName}
                 onChange={handleInputChange}
               />
@@ -138,7 +138,7 @@ const AccountProfileDetails = () => {
                 id="username"
                 label="Username"
                 autoComplete="uname"
-                error={errors.username}
+                error={formErrors.username}
                 value={values.username}
                 onChange={handleInputChange}
               />
@@ -150,7 +150,7 @@ const AccountProfileDetails = () => {
                 id="email"
                 label="Email Address"
                 autoComplete="email"
-                error={errors.email}
+                error={formErrors.email}
                 value={values.email}
                 onChange={handleInputChange}
               />
@@ -177,7 +177,7 @@ const AccountProfileDetails = () => {
                 id="password"
                 label="Password"
                 type="password"
-                error={errors.password}
+                error={formErrors.password}
                 value={values.password}
                 onChange={handleInputChange}
               />
@@ -189,7 +189,7 @@ const AccountProfileDetails = () => {
                 id="confirmPassword"
                 label="Confirm Password"
                 type="password"
-                error={errors.confirmPassword}
+                error={formErrors.confirmPassword}
                 value={values.confirmPassword}
                 onChange={handleInputChange}
               />

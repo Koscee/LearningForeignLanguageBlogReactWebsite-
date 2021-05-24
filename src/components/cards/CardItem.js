@@ -37,9 +37,14 @@ const CardItem = (props) => {
           <Typography gutterBottom variant={titleTextVariant} component="h2">
             {title}
           </Typography>
-          <Typography variant={contentTextVariant} color="textSecondary" component="p">
-            {description}
-          </Typography>
+          <span className={classes.description}>
+            <Typography
+              variant={contentTextVariant}
+              color="textSecondary"
+              dangerouslySetInnerHTML={{ __html: description.slice(0, 150) }}
+            />
+            ...
+          </span>
         </MuiCardContent>
         {children}
       </MuiCard>
