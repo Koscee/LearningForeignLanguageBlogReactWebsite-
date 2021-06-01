@@ -1,5 +1,5 @@
 import { AccountCircle } from '@material-ui/icons';
-import CollectionsBookmarkOutlinedIcon from '@material-ui/icons/CollectionsBookmarkOutlined';
+// import CollectionsBookmarkOutlinedIcon from '@material-ui/icons/CollectionsBookmarkOutlined';
 import {
   BarChart as BarChartIcon,
   Edit3 as PencilIcon,
@@ -22,30 +22,30 @@ export const itemsList = {
       icon: HomeIcon,
       title: 'Home'
     },
-    {
-      href: '/categories',
-      icon: CollectionsBookmarkOutlinedIcon,
-      title: 'Categories',
-      subNav: [
-        {
-          id: 1,
-          href: '/categories', // categories/English
-          title: 'English'
-        },
-        {
-          id: 2,
-          href: '/categories', // categories/Chinese
-          title: 'Chinese'
-        },
-        {
-          id: 3,
-          href: '/categories', // categories/Russian
-          title: 'Russian'
-        },
-      ]
-    }
+    // {
+    //   href: '/categories',
+    //   icon: CollectionsBookmarkOutlinedIcon,
+    //   title: 'Categories',
+    //   subNav: [
+    //     {
+    //       id: 1,
+    //       href: '/categories', // categories/English
+    //       title: 'English'
+    //     },
+    //     {
+    //       id: 2,
+    //       href: '/categories', // categories/Chinese
+    //       title: 'Chinese'
+    //     },
+    //     {
+    //       id: 3,
+    //       href: '/categories', // categories/Russian
+    //       title: 'Russian'
+    //     },
+    //   ]
+    // }
   ],
-  accountNav: [
+  accountTopNav: [
     {
       href: '',
       icon: AccountCircle,
@@ -58,14 +58,15 @@ export const itemsList = {
           title: 'Profile'
         },
         {
-          href: '/home',
+          // href: '',
+          action: 'logout',
           icon: LogOutIcon,
           title: 'Logout'
         }
       ]
     }
   ],
-  loginNav: {
+  userNav: {
     user: [
       {
         href: '/app/account',
@@ -73,21 +74,22 @@ export const itemsList = {
         title: 'Profile'
       },
       {
-        href: '/home',
+        // href: '',
+        action: 'logout',
         icon: LogOutIcon,
         title: 'Logout'
       }
     ],
     admin: [
       {
-        href: '/app/posts',
+        href: '/app/admin/posts/myPosts',
         icon: PencilIcon,
         title: 'My Posts'
       },
     ],
     superAdmin: [
       {
-        href: '/app/dashboard',
+        href: '/app/manage/dashboard',
         icon: BarChartIcon,
         title: 'Dashboard'
       },
@@ -98,13 +100,18 @@ export const itemsList = {
         subNav: [
           {
             id: 1,
-            href: '/app/users',
+            href: '/app/manage/users',
             title: 'Users'
           },
           {
             id: 2,
-            href: '/app/posts',
+            href: '/app/manage/posts',
             title: 'Posts'
+          },
+          {
+            id: 3,
+            href: '/app/manage/categories',
+            title: 'Categories'
           }
         ]
       }

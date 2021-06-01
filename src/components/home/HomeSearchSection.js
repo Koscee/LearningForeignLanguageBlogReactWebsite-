@@ -1,6 +1,7 @@
 import { Container, Grid, makeStyles } from '@material-ui/core';
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import SearchBar from '../controls/SearchBar';
 
 const useStyles = makeStyles((theme) => ({
@@ -33,17 +34,27 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const HomeSearchSection = () => {
+const HomeSearchSection = ({ searchText, setSearchText }) => {
   const classes = useStyles();
   return (
     <Grid container className={classes.mainContainer}>
       <Grid item className={classes.mainItem}>
         <Container maxWidth="md" className={classes.mainItem}>
-          <SearchBar className={classes.searchBar} placeholder="Type here to search" />
+          <SearchBar
+            className={classes.searchBar}
+            placeholder="Type here to search"
+            searchText={searchText}
+            setSearchText={setSearchText}
+          />
         </Container>
       </Grid>
     </Grid>
   );
+};
+
+HomeSearchSection.propTypes = {
+  searchText: PropTypes.string.isRequired,
+  setSearchText: PropTypes.func.isRequired,
 };
 
 export default HomeSearchSection;

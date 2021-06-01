@@ -10,6 +10,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { CardActions, Divider, makeStyles } from '@material-ui/core';
 import dateFormat from 'dateformat';
+import { connect } from 'react-redux';
+import { deletePost } from '../../actions/postActions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,19 +69,26 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const LinkIconBtn = ({ href, label, icon }) => (
-  <Link to={href}>
+const LinkIconBtn = ({
+  href, label, icon, ...other
+}) => (
+  <Link to={href} {...other}>
     <IconButton aria-label={label} className={useStyles().icon}>
       {icon}
     </IconButton>
   </Link>
 );
 
-const PostCard = ({ post, ...rest }) => {
+const PostCard = (props) => {
   const classes = useStyles();
+  const { post } = props;
+
+  const onDeleteClick = (id) => {
+    props.deletePost(id);
+  };
 
   return (
-    <Card className={classes.root} {...rest}>
+    <Card className={classes.root}>
       <CardMedia
         component="img"
         className={classes.cover}
@@ -96,14 +105,10 @@ const PostCard = ({ post, ...rest }) => {
           <Typography gutterBottom component="h5" variant="h3" fontSize="large" sx={{ mb: 1 }}>
             {post.title}
           </Typography>
-          <span className={classes.description}>
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              dangerouslySetInnerHTML={{ __html: post.content.slice(0, 130) }}
-            />
-            ...
-          </span>
+
+          <Typography variant="body2" color="textSecondary">
+            { `${post.description.slice(0, 130)}...`}
+          </Typography>
         </CardContent>
         <Typography variant="caption" color="textSecondary" className={classes.alignment}>
           {`posted on: ${dateFormat(post.createdAt, 'mmm dS, yyyy')}`}
@@ -116,15 +121,13 @@ const PostCard = ({ post, ...rest }) => {
             icon={<OpenInNewIcon fontSize="small" />}
           />
           <LinkIconBtn
-            href={`/app/posts/updatePost/${post.id}`}
+            href={`/app/admin/posts/updatePost/${post.id}`}
             label="update"
             icon={<EditIcon color="secondary" fontSize="small" />}
           />
-          <LinkIconBtn
-            href="/app/posts/deletePost"
-            label="delete"
-            icon={<DeleteIcon color="error" fontSize="small" />}
-          />
+          <IconButton aria-label="delete" className={classes.icon} onClick={() => onDeleteClick(post.id)}>
+            <DeleteIcon color="error" fontSize="small" />
+          </IconButton>
         </CardActions>
       </div>
     </Card>
@@ -133,11 +136,12 @@ const PostCard = ({ post, ...rest }) => {
 
 PostCard.propTypes = {
   post: PropTypes.object.isRequired,
+  deletePost: PropTypes.func.isRequired,
 };
 LinkIconBtn.propTypes = {
-  href: PropTypes.string.isRequired,
+  href: PropTypes.string,
   label: PropTypes.string.isRequired,
   icon: PropTypes.any.isRequired
 };
 
-export default PostCard;
+export default connect(null, { deletePost })(PostCard);

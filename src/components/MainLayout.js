@@ -1,27 +1,38 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 import HeaderNavBar from './Header';
 import SideBar from './SideBar';
 import * as Frame from './LayoutStyles';
-import state from './stateConstants';
 
-const MainLayout = () => {
+const MainLayout = ({ security }) => {
   const [isMobileNavOpen, setMobileNavOpen] = useState(false);
-  // const isLoggedIn = true; // later use hooks (useState) or redux to handle change
-  // const role = 'superAdmin'; // later use hooks (useState) or redux to handle change
-  const { isLoggedIn, role } = state;
+
+  console.log('MainLayoutSecurity', security);
+
+  const { validToken, user } = security;
+  let userIsAuthenticated;
+
+  if (validToken && user) {
+    userIsAuthenticated = true;
+    console.log(' user is Authenticated');
+  } else {
+    userIsAuthenticated = false;
+    console.log(' useris not Authenticated');
+  }
 
   return (
     <Frame.MainLayoutRoot>
       <HeaderNavBar
         onMobileNavOpen={() => setMobileNavOpen(true)}
-        isLoggedIn={isLoggedIn}
+        isLoggedIn={userIsAuthenticated}
       />
       <SideBar
         onMobileClose={() => setMobileNavOpen(false)}
         openMobile={isMobileNavOpen}
-        isLoggedIn={isLoggedIn}
-        role={role}
+        isLoggedIn={userIsAuthenticated}
+        role={user.roleName}
       />
       <Frame.MainLayoutWrapper>
         <Frame.LayoutContainer>
@@ -34,4 +45,12 @@ const MainLayout = () => {
   );
 };
 
-export default MainLayout;
+MainLayout.propTypes = {
+  security: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  security: state.security
+});
+
+export default connect(mapStateToProps)(MainLayout);

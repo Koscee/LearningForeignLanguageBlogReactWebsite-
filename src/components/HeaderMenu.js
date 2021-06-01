@@ -1,12 +1,15 @@
 /* eslint react/prop-types: 0 */
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-// import Button from "@material-ui/core/Button";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
+import { logout } from 'src/actions/securityActions';
 
-export default function NavTopMenuItem({ menuItem }) {
+function NavTopMenuItem(props) {
+  const { menuItem } = props;
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -21,7 +24,13 @@ export default function NavTopMenuItem({ menuItem }) {
   const open = Boolean(anchorEl);
 
   const handleClick = (listItem) => (
-    listItem.subNav ? handleOpenMenu : () => { navigate(listItem.href); handleCloseMenu(); }
+    listItem.subNav ? handleOpenMenu
+      : () => {
+        if (listItem.href) { navigate(listItem.href); }
+        if (listItem.action === 'logout') { props.logout(); window.location.href = '/user/login'; }
+        if (listItem.name) { navigate(`/categories/${listItem.name}`); }
+        handleCloseMenu();
+      }
   );
 
   return (
@@ -55,7 +64,7 @@ export default function NavTopMenuItem({ menuItem }) {
         onClose={handleCloseMenu}
       >
         {menuItem.subNav.map((subMenu) => (
-          <MenuItem key={subMenu.title} onClick={handleClick(subMenu)}>{subMenu.title}</MenuItem>
+          <MenuItem key={subMenu.title || subMenu.name} onClick={handleClick(subMenu)}>{subMenu.title || subMenu.name}</MenuItem>
         ))}
       </Menu>
       )}
@@ -63,3 +72,9 @@ export default function NavTopMenuItem({ menuItem }) {
 
   );
 }
+
+NavTopMenuItem.propTypes = {
+  logout: PropTypes.func.isRequired
+};
+
+export default connect(null, { logout })(NavTopMenuItem);

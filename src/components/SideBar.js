@@ -11,17 +11,18 @@ import {
   Typography,
 } from '@material-ui/core';
 
+import { connect } from 'react-redux';
+import { getCategories } from 'src/actions/categoryAction';
 import Controls from './controls/Controls';
-import { user, itemsList } from './NavListItems';
+import { itemsList } from './NavListItems';
 import SideBarMenuItem from './SideBarListNav';
+import categoryNavList from './categoryNavList';
 // import Controls from './controls/Controls';
 
-// const role = 'superAdmin';
-
-const SideBar = ({
-  onMobileClose, openMobile, isLoggedIn, role, type
-}, props) => {
-  const { children } = props;
+const SideBar = (props) => {
+  const {
+    onMobileClose, openMobile, isLoggedIn, role, user, categories, type, children
+  } = props;
   const location = useLocation();
 
   useEffect(() => {
@@ -29,6 +30,13 @@ const SideBar = ({
       onMobileClose();
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    (async () => {
+      await props.getCategories();
+      categoryNavList[0].subNav = categories;
+    })();
+  }, [categories.length]);
 
   const displayNavItem = (arry) => (
     arry.map((item) => (
@@ -74,7 +82,8 @@ const SideBar = ({
             >
               <Avatar
                 component={RouterLink}
-                src={user.avatar}
+                alt={user.firstName}
+                src={user.avatarImg}
                 sx={{
                   cursor: 'pointer',
                   width: 64,
@@ -84,10 +93,14 @@ const SideBar = ({
                 to="/app/account"
               />
               <Typography color="textPrimary" variant="h5">
-                {user.name}
+                {user.fullName}
               </Typography>
-              <Typography color="textSecondary" variant="body2">
-                {user.jobTitle}
+              <Typography
+                color="textSecondary"
+                variant="caption"
+                style={{ fontSize: '0.6rem' }}
+              >
+                {user.roleName}
               </Typography>
             </Box>
             <Divider />
@@ -98,11 +111,13 @@ const SideBar = ({
       <Box sx={{ p: 2 }}>
         <List>
           {displayNavItem(itemsList.mainNav)}
+          {/* {console.log(categoryNavList)} */}
+          {displayNavItem(categoryNavList)}
           {
               isLoggedIn && displayNavItem([
-                ...role !== 'user' ? itemsList.loginNav.admin : [],
-                ...role === 'superAdmin' ? itemsList.loginNav.superAdmin : [],
-                ...itemsList.loginNav.user
+                ...role !== 'USER' ? itemsList.userNav.admin : [],
+                ...role === 'SUPER_ADMIN' ? itemsList.userNav.superAdmin : [],
+                ...itemsList.userNav.user
               ])
           }
         </List>
@@ -167,7 +182,10 @@ SideBar.propTypes = {
   children: PropTypes.any,
   type: PropTypes.string,
   role: PropTypes.string,
-  isLoggedIn: PropTypes.bool
+  user: PropTypes.object.isRequired,
+  isLoggedIn: PropTypes.bool,
+  getCategories: PropTypes.func.isRequired,
+  categories: PropTypes.array.isRequired
 };
 
 SideBar.defaultProps = {
@@ -175,4 +193,9 @@ SideBar.defaultProps = {
   openMobile: false
 };
 
-export default SideBar;
+const mapStateToProps = (state) => ({
+  user: state.security.user,
+  categories: state.category.categories
+});
+
+export default connect(mapStateToProps, { getCategories })(SideBar);

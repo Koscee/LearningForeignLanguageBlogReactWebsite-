@@ -21,7 +21,7 @@ const CardWithAvatar = (props) => {
   return (
     <CardItem
       rootStyles={classes.cardWithAvatar}
-      variant="outlined"
+      // variant="outlined"
       title={title}
       description={description}
       image={image}

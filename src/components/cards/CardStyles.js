@@ -21,7 +21,7 @@ const cardStyles = (theme) => ({
     margin: 25,
     textAlign: 'left',
     paddingBottom: 4,
-    boxShadow: '1px 2px 4px 1px rgba(0, 0, 0, 0.05)',
+    boxShadow: '1px 2px 4px 1px rgba(0, 0, 0, 0.01)',
     border: 'none',
     borderRadius: 0,
     '& .MuiCardContent-root': {

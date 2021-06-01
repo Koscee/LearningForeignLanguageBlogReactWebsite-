@@ -25,9 +25,9 @@ export default function Select(props) {
       >
         {/* <MenuItem value="">None</MenuItem> */}
         {
-            options.map(
-              (item) => (<MenuItem key={item.id} value={item.title}>{item.title}</MenuItem>)
-            )
+          options.map(
+            (item) => (<MenuItem key={item.id} value={item.name}>{item.name}</MenuItem>)
+          )
         }
       </MuiSelect>
       {error && <FormHelperText>{error}</FormHelperText>}

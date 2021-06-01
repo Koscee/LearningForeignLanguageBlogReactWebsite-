@@ -1,18 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Grid, Typography, Container } from '@material-ui/core';
 import CardWithAvatar from '../cards/CardWithAvatar';
-import { getPosts } from '../../actions/postActions';
 
 const RelatedPost = (props) => {
-  const {
-    postItems
-  } = props;
+  const { relatedPosts } = props;
 
-  useEffect(() => {
-    props.getPosts();
-  }, [postItems.length]);
+  // console.log('relatedPost', relatedPosts);
 
   return (
     <Grid container>
@@ -20,17 +14,18 @@ const RelatedPost = (props) => {
         <Typography gutterBottom variant="h3" color="textSecondary">Related Posts</Typography>
       </Container>
       {
-        postItems.length > 0
-          ? postItems.map((postItem) => (
+        relatedPosts.length > 0
+          ? relatedPosts.slice(0, 4).map((postItem) => (
             <Grid item md={3} sm={6} xs={12} key={postItem.id}>
               <CardWithAvatar
                 title={postItem.title}
                 image={postItem.coverImage}
-                description={postItem.content}
+                description={postItem.description}
                 imageHeight={130}
                 href={`/article/${postItem.id}`}
-                authorName="Annabel James"
-                authorProfilePic="https://source.unsplash.com/100x100/?profile"
+                authorName={postItem.author}
+                // authorProfilePic="https://source.unsplash.com/100x100/?profile"
+                authorProfilePic={postItem.authorAvatar}
                 publishedDate={postItem.createdAt}
               />
             </Grid>
@@ -42,12 +37,7 @@ const RelatedPost = (props) => {
 };
 
 RelatedPost.propTypes = {
-  getPosts: PropTypes.func.isRequired,
-  postItems: PropTypes.array.isRequired,
+  relatedPosts: PropTypes.array.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  postItems: state.post.posts,
-});
-
-export default connect(mapStateToProps, { getPosts })(RelatedPost);
+export default RelatedPost;

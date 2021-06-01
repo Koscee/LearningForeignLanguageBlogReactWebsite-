@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  comments: {
+  container: {
     margin: '45px auto 50px',
     width: '75%',
     [theme.breakpoints.down('md')]: {
@@ -24,29 +24,29 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const CommentSection = (props) => {
+const CommentSection = ({ postId, comments }) => {
   const classes = useStyles();
-  const { comments } = props;
 
   return (
     <Box sx={{ pt: 4 }}>
       <Grid container className={classes.root}>
         <Grid item>
-          <CommentForm />
+          <CommentForm postId={postId} />
         </Grid>
-        <Container className={classes.comments}>
+        <Container className={classes.container}>
           {
-            comments.map((comment) => (
+            comments ? comments.map((comment) => (
               <Box key={comment.id} sx={{ marginTop: 4 }}>
                 <AuthorInfo
-                  authorName={comment.name}
-                  authorProfilePic={comment.avatarUrl}
-                  publishedDate="Feb 6th, 2021"
+                  authorName={comment.userName}
+                  authorProfilePic={comment.userAvatar}
+                  publishedDate={comment.created_At}
                   isComment
-                  comment={comment.body}
+                  comment={comment.content}
                 />
               </Box>
             ))
+              : null
         }
         </Container>
 
@@ -57,7 +57,8 @@ const CommentSection = (props) => {
 };
 
 CommentSection.propTypes = {
-  comments: PropTypes.array.isRequired
+  comments: PropTypes.array,
+  postId: PropTypes.string,
 };
 
 export default CommentSection;

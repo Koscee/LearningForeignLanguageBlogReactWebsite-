@@ -1,63 +1,81 @@
-import React, { useEffect } from 'react';
-// import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
+  Box,
   Card,
   CardContent,
+  CircularProgress,
   Grid, makeStyles, Typography,
 } from '@material-ui/core';
+// import clsx from 'clsx';
 import Controls from '../controls/Controls';
+import buttonStyles from '../controls/loadButtonStyles';
 import customStyles from '../forms/LoginRegisterFormStyles';
 import { useForm, Form } from '../forms/useForm';
 import { createPost } from '../../actions/postActions';
+import uploadImage from '../../actions/imageUploadActions';
+import { getCategories } from '../../actions/categoryAction';
 
 const useStyles = makeStyles((theme) => (customStyles(theme)));
 const shadow = '-1px -1px 10px 2px rgba(0, 0, 0, 0.25)';
-const buttonStyles = {
-  border: 0,
-  padding: '0 30px',
-  height: 40,
-  boxShadow: '0 1px 4px 2px rgba(33, 159, 243, .3)',
-//   background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
+const button = {
+  root: {
+    border: 0,
+    padding: '0 30px',
+    height: 40,
+    boxShadow: '0 1px 4px 2px rgba(33, 159, 243, .3)',
+    //   background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
+  }
 };
 const textEditorParentGridStyles = {
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))'
 };
 
-const categories = [
-  { id: 'chinese', title: 'Chinese' },
-  { id: 'english', title: 'English' },
-  { id: 'french', title: 'French' },
-  { id: 'russian', title: 'Russian' },
-];
 const initialValues = {
   title: '',
-  categoryName: categories[0].title,
+  description: '',
+  categoryName: '',
   coverImage: '',
   content: '',
 };
 
 const AddPostForm = (props) => {
-  const { errors } = props;
+  const { categories, errors } = props;
   const classes = useStyles();
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
+  const navigate = useNavigate();
   const {
     values, formErrors, setFormErrors, handleInputChange,
   } = useForm(initialValues);
 
   useEffect(() => {
+    props.getCategories();
+  }, [getCategories]);
+
+  useEffect(() => {
     setFormErrors(errors);
   }, [errors]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    props.createPost(values, navigate);
+    if (!loading) {
+      setSuccess(false);
+      setLoading(true);
+    }
+    if (values.coverImage !== '') {
+      const imageDir = `/posts/coverImages/post_${values.title}`;
+      const imageURL = await props.uploadImage(values.coverImage, imageDir);
+      values.coverImage = imageURL;
+    }
+    props.createPost(values, navigate, setLoading, setSuccess);
+
+    // if (loading) setLoading(false);
     // console.log('history', navigate);
-    // console.log(values);
   };
 
   return (
@@ -90,11 +108,26 @@ const AddPostForm = (props) => {
             </Grid>
 
             <Grid item xs={12}>
+              <Controls.Input
+                required
+                multiline
+                rows={2}
+                name="description"
+                id="postDescription"
+                label="Post Description"
+                error={formErrors.description}
+                value={values.description}
+                onChange={handleInputChange}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
               <Controls.Select
                 name="categoryName"
                 label="Category Name"
-                value={values.categoryName}
                 options={categories}
+                value={values.categoryName}
+                error={formErrors.categoryName}
                 onChange={handleInputChange}
               />
             </Grid>
@@ -135,13 +168,18 @@ const AddPostForm = (props) => {
             </Grid>
 
             <Grid container item xs={12} justifyContent="flex-end">
-              <Controls.Buttons.Button
-                sx={buttonStyles}
-                text="CREATE"
+              <Box sx={buttonStyles.wrapper}>
+                <Controls.Buttons.Button
+                  sx={{ ...button.root, ...buttonStyles.buttonSuccess(success) }}
+                  text="PUBLISH"
                 // size="large"
-                type="submit"
-              />
+                  type="submit"
+                  disabled={loading}
+                />
+                {loading && <CircularProgress size={25} sx={buttonStyles.buttonProgress} />}
+              </Box>
             </Grid>
+
           </Grid>
         </CardContent>
       </Card>
@@ -150,12 +188,16 @@ const AddPostForm = (props) => {
 };
 
 AddPostForm.propTypes = {
+  getCategories: PropTypes.func.isRequired,
+  uploadImage: PropTypes.func.isRequired,
   createPost: PropTypes.func.isRequired,
+  categories: PropTypes.array.isRequired,
   errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
+  categories: state.category.categories,
   errors: state.errors
 });
 
-export default connect(mapStateToProps, { createPost })(AddPostForm);
+export default connect(mapStateToProps, { getCategories, uploadImage, createPost })(AddPostForm);

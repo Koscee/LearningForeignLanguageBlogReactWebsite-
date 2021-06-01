@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
@@ -10,21 +10,39 @@ import {
 } from '@material-ui/core';
 import PostListToolbar from 'src/components/posts/PostListToolbar';
 import PostCard from 'src/components/posts/PostCard';
-import { getPosts } from '../actions/postActions';
+import SnackBarAlert from 'src/components/SnacKBarAlert';
+import { getAllFilteredPosts } from '../actions/postActions';
 // import posts from 'src/__mocks__/posts';
 
 const PostList = (props) => {
-  const { postItems } = props;
+  const { alert, postItems } = props;
+
+  const [searchText, setSearchText] = useState('');
+  const [alertOpen, setAlertOpen] = useState(false);
 
   useEffect(() => {
-    props.getPosts();
-  }, [postItems]);
+    props.getAllFilteredPosts();
+  }, [getAllFilteredPosts]);
+
+  useEffect(() => {
+    if (alert.message !== '') setAlertOpen(true);
+  }, [alert]);
 
   return (
     <>
       <Helmet>
         <title>Posts | Language Learning Blog</title>
       </Helmet>
+      {
+        alert && (
+          <SnackBarAlert
+            severity={alert.type}
+            alertOpen={alertOpen}
+            setAlertOpen={setAlertOpen}
+            message={alert.message}
+          />
+        )
+        }
       <Box
         sx={{
           backgroundColor: 'background.default',
@@ -33,15 +51,22 @@ const PostList = (props) => {
         }}
       >
         <Container maxWidth="lg">
-          <PostListToolbar />
+          <PostListToolbar
+            showAddButton={false}
+            searchText={searchText}
+            setSearchText={setSearchText}
+          />
           <Box sx={{ pt: 8, px: 2 }}>
             <Grid
               container
               spacing={5}
             >
               {
-                postItems.posts.length > 0
+                postItems && (postItems.posts.length > 0
                   ? postItems.posts.map((post) => (
+                    (post.title.toLowerCase().includes(searchText.toLowerCase())
+                    || post.description.toLowerCase().includes(searchText.toLowerCase()))
+                    && (
                     <Grid
                       item
                       key={post.id}
@@ -51,9 +76,10 @@ const PostList = (props) => {
                     >
                       <PostCard post={post} />
                     </Grid>
+                    )
                   ))
-                  : null
-              }
+                  : null)
+                        }
             </Grid>
           </Box>
           {/* <Box
@@ -76,12 +102,14 @@ const PostList = (props) => {
 };
 
 PostList.propTypes = {
-  getPosts: PropTypes.func.isRequired,
-  postItems: PropTypes.object.isRequired
+  getAllFilteredPosts: PropTypes.func.isRequired,
+  postItems: PropTypes.object.isRequired,
+  alert: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
-  postItems: state.post
+  postItems: state.post,
+  alert: state.alert
 });
 
-export default connect(mapStateToProps, { getPosts })(PostList);
+export default connect(mapStateToProps, { getAllFilteredPosts })(PostList);

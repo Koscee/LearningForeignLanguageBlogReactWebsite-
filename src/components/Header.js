@@ -7,19 +7,13 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import NavToolBar from './NavToolBar';
 
-// // import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
-// // import InputIcon from '@material-ui/icons/Input';
-// import AccountCircle from '@material-ui/icons/AccountCircle';
-
-// import Logo from './Logo';
-
 const HeaderNavBar = ({ onMobileNavOpen, isLoggedIn, ...rest },) => (
   <AppBar
     elevation={0}
     {...rest}
   >
     <NavToolBar isLoggedIn={isLoggedIn}>
-      <Hidden lgUp>
+      <Hidden mdUp>
         <IconButton
           color="inherit"
           onClick={onMobileNavOpen}

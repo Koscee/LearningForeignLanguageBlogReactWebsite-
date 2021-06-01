@@ -1,19 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Box, Container } from '@material-ui/core';
 import CategorySearch from 'src/components/category/CategorySearch';
-// import postItems from '../__mocks__/posts';
+import { useNavigate, useParams } from 'react-router';
 import MainGridLayout from '../components/gridLayouts/MainGridLayout';
-import { getPosts } from '../actions/postActions';
+import { getCategoryByName } from '../actions/categoryAction';
 
 const Category = (props) => {
-  const { postItems } = props;
+  const { category } = props;
+  const navigate = useNavigate();
+  const { name } = useParams();
+
+  const [searchText, setSearchText] = useState('');
+  const [postList, setPostList] = useState([]);
+
+  const mountedRef = useRef(true);
+
+  async function populatePosts() {
+    setPostList(category.posts);
+  }
 
   useEffect(() => {
-    props.getPosts();
-  }, [postItems]);
+    (async () => {
+      await props.getCategoryByName(name, navigate);
+      await populatePosts();
+    })();
+    return () => {
+      mountedRef.current = false;
+    };
+  }, [category.id, name]);
 
   return (
     <>
@@ -29,12 +46,15 @@ const Category = (props) => {
       >
         <Container maxWidth="md">
           <Box sx={{ my: 5 }}>
-            <CategorySearch />
+            <CategorySearch
+              searchText={searchText}
+              setSearchText={setSearchText}
+            />
           </Box>
         </Container>
         <Container maxWidth="lg" style={{ margin: 'auto' }}>
           <Box sx={{ pt: 3 }}>
-            <MainGridLayout postItems={postItems.posts} />
+            <MainGridLayout postItems={postList} searchText={searchText} />
           </Box>
         </Container>
       </Box>
@@ -43,11 +63,12 @@ const Category = (props) => {
 };
 
 Category.propTypes = {
-  getPosts: PropTypes.func.isRequired,
-  postItems: PropTypes.object.isRequired
+  getCategoryByName: PropTypes.func.isRequired,
+  category: PropTypes.object.isRequired,
+  // searchText: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  postItems: state.post
+  category: state.category.category
 });
-export default connect(mapStateToProps, { getPosts })(Category);
+export default connect(mapStateToProps, { getCategoryByName })(Category);

@@ -9,6 +9,8 @@ import {
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { logout } from '../actions/securityActions';
 
 const actionStyle = (theme) => ({
   // backgroundColor: theme.palette.customWhite.shade50,
@@ -33,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2.5),
     paddingRight: theme.spacing(2.5),
     '& .MuiListItem-root': {
+      paddingLeft: theme.spacing(1.5),
       paddingTop: theme.spacing(0.4),
       paddingBottom: theme.spacing(0.4),
     }
@@ -43,7 +46,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const SideBarMenuItem = ({ menuItem }) => {
+const SideBarMenuItem = (props) => {
+  const { menuItem } = props;
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,8 +58,16 @@ const SideBarMenuItem = ({ menuItem }) => {
   };
 
   const isActive = (listItem) => (location.pathname === listItem.href && classes.active);
+  // const handleClick = (listItem) => (
+  //   listItem.subNav ? showSubNav : () => navigate(listItem.href)
+  // );
   const handleClick = (listItem) => (
-    listItem.subNav ? showSubNav : () => navigate(listItem.href)
+    listItem.subNav ? showSubNav
+      : () => {
+        if (listItem.href) { navigate(listItem.href); }
+        if (listItem.action === 'logout') { props.logout(); window.location.href = '/user/login'; }
+        if (listItem.name) { navigate(`/categories/${listItem.name}`); }
+      }
   );
 
   const ListItem = ({ itemObj, children, ...other }) => (
@@ -70,7 +82,7 @@ const SideBarMenuItem = ({ menuItem }) => {
           <menuItem.icon size="20" />
         )}
       </ListItemIcon>
-      <ListItemText primary={itemObj.title} />
+      <ListItemText primary={itemObj.title || itemObj.name} />
       {children}
     </MuiListItem>
   );
@@ -94,7 +106,8 @@ const SideBarMenuItem = ({ menuItem }) => {
 };
 
 SideBarMenuItem.propTypes = {
-  menuItem: PropTypes.any
+  menuItem: PropTypes.any,
+  logout: PropTypes.func.isRequired
 };
 
-export default SideBarMenuItem;
+export default connect(null, { logout })(SideBarMenuItem);

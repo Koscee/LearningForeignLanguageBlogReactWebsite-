@@ -5,7 +5,7 @@ import {
   Container
 } from '@material-ui/core';
 import dateFormat from 'dateformat';
-import chatStyles from './Chat';
+import chatStyles from './ChatBoxStyles';
 
 const AuthorInfo = (props) => {
   const {

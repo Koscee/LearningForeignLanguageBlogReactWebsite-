@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   makeStyles, Grid, Typography, Container,
@@ -11,6 +11,9 @@ import {
 import CommentIcon from '@material-ui/icons/Comment';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 // import content from '../../__mocks__/content';
+import { connect } from 'react-redux';
+import { deleteLike, likePost } from 'src/actions/likeAction';
+import { useNavigate } from 'react-router';
 import AuthorInfo from './AuthorInfo';
 
 const useStyles = makeStyles((theme) => ({
@@ -68,24 +71,55 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ContentSection = (props) => {
-  const { post } = props;
+  const { post, username } = props;
   const classes = useStyles();
-  const [isliked, setIsLiked] = useState(false);
+  const navigate = useNavigate();
+  const [isLiked, setIsLiked] = useState(false);
   const [displayComment, setDisplayComment] = useState(false);
+
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    if (post.likes !== undefined) {
+      for (let i = 0; i < post.likes.length; i++) {
+        const like = post.likes[i];
+        if (like.userName === username) {
+          setIsLiked(true);
+          break;
+        }
+      }
+    }
+    return () => {
+      mountedRef.current = false;
+    };
+  }, [post.id]);
+
+  const { jwtToken } = localStorage;
+
+  const handleLikePost = async () => {
+    if (jwtToken) {
+      if (!isLiked) {
+        await props.likePost(post.id, { isLiked: true }, navigate, setIsLiked);
+      } else {
+        await props.deleteLike(post.id, navigate, setIsLiked);
+      }
+    } else { navigate('/user/login'); }
+    console.log('clicked', isLiked);
+  };
 
   return (
     <Grid container className={classes.root}>
       <Grid item className={classes.headerMainGrid}>
         <Grid className={classes.headerContainer}>
-          <Grid item>
-            <Typography variant="h2" align="left" className={classes.titleText}>
+          <Grid item sx={{ pb: 1 }}>
+            <Typography variant="h1" align="left" className={classes.titleText}>
               {post.title}
             </Typography>
           </Grid>
           <Grid item>
             <AuthorInfo
-              authorName="Anabell James"
-              authorProfilePic="/static/images/avatars/avatar_3.png"
+              authorName={post.author}
+              authorProfilePic={post.authorAvatar}
+              // authorProfilePic="/static/images/avatars/avatar_3.png"
               publishedDate={post.createdAt}
               isTitle
             />
@@ -101,8 +135,8 @@ const ContentSection = (props) => {
               {content} */}
             </Typography>
             <Box sx={{ paddingTop: 6 }}>
-              <IconButton onClick={() => setIsLiked(!isliked)}>
-                <ThumbUpIcon color={isliked ? 'error' : 'disabled'} />
+              <IconButton onClick={handleLikePost}>
+                <ThumbUpIcon color={isLiked ? 'error' : 'disabled'} />
               </IconButton>
               <IconButton onClick={() => setDisplayComment(!displayComment)}>
                 <CommentIcon color={displayComment ? 'primary' : 'inherit'} />
@@ -116,7 +150,14 @@ const ContentSection = (props) => {
 };
 
 ContentSection.propTypes = {
+  likePost: PropTypes.func.isRequired,
+  deleteLike: PropTypes.func.isRequired,
   post: PropTypes.object.isRequired,
+  username: PropTypes.string.isRequired
 };
 
-export default ContentSection;
+const mapStateToProps = (state) => ({
+  username: state.security.user.username
+});
+
+export default connect(mapStateToProps, { likePost, deleteLike })(ContentSection);

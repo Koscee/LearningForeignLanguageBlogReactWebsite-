@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core';
 import Controls from 'src/components/controls/Controls';
 import SearchIcon from '@material-ui/icons/Search';
@@ -15,16 +16,23 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const CategorySearch = () => {
+const CategorySearch = ({ searchText, setSearchText }) => {
   const classes = useStyles();
   return (
     <Controls.SearchBar
       placeholder="Search post"
+      searchText={searchText}
+      setSearchText={setSearchText}
       className={classes.searchBar}
       searchIcon={<SearchIcon color="primary" fontSize="medium" />}
       closeIcon={<CloseIcon color="primary" fontSize="medium" />}
     />
   );
+};
+
+CategorySearch.propTypes = {
+  searchText: PropTypes.string.isRequired,
+  setSearchText: PropTypes.func.isRequired,
 };
 
 export default CategorySearch;

@@ -1,28 +1,21 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+// import { connect } from 'react-redux';
 import MainGridLayout from '../gridLayouts/MainGridLayout';
-// import postItems from '../../__mocks__/posts';
-import { getPosts } from '../../actions/postActions';
+// import { getAllFilteredPosts } from '../../actions/postActions';
 
 const HomeItemsSection = (props) => {
-  const { postItems } = props;
-
-  useEffect(() => {
-    props.getPosts();
-  }, [getPosts]);
+  const { postItems, searchText } = props;
 
   return (
-    <MainGridLayout postItems={postItems.posts} />
+    <MainGridLayout postItems={postItems} searchText={searchText} />
   );
 };
 
 HomeItemsSection.propTypes = {
-  getPosts: PropTypes.func.isRequired,
-  postItems: PropTypes.object.isRequired
+  // getAllFilteredPosts: PropTypes.func.isRequired,
+  postItems: PropTypes.array.isRequired,
+  searchText: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  postItems: state.post
-});
-export default connect(mapStateToProps, { getPosts })(HomeItemsSection);
+export default HomeItemsSection;

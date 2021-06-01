@@ -1,5 +1,7 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
@@ -10,33 +12,50 @@ import Logo from '../Logo';
 import Controls from '../controls/Controls';
 import customStyles from './LoginRegisterFormStyles';
 import { useForm, Form } from './useForm';
+import { registerUser } from '../../actions/securityActions';
 
 const useStyles = makeStyles((theme) => (customStyles(theme)));
 
 const genderItems = [
-  { id: 'male', title: 'Male' },
-  { id: 'female', title: 'Female' },
+  { id: 'male', name: 'Male' },
+  { id: 'female', name: 'Female' },
 ];
 const initialValues = {
   firstName: '',
   lastName: '',
   username: '',
-  email: '',
-  phoneNumber: '',
-  gender: genderItems[0].title,
   password: '',
-  confirmPassword: ''
+  confirmPassword: '',
+  gender: genderItems[0].name,
+  phoneNumber: '',
+  avatarImg: '',
+  email: ''
 };
 
-export default function RegisterForm() {
+const RegisterForm = (props) => {
+  const { errors, security } = props;
   const classes = useStyles();
+  const navigate = useNavigate();
   const {
-    values, formErrors, handleInputChange,
+    values, formErrors, setFormErrors, handleInputChange,
   } = useForm(initialValues);
+
+  useEffect(() => {
+    setFormErrors(errors);
+  }, [errors]);
+
+  useEffect(() => {
+    // console.log('useEffect runed');
+    if (security.validToken) {
+      navigate('/home');
+    }
+  }, [security]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(values);
+    const numberStr = values.phoneNumber;
+    values.phoneNumber = numberStr.replace(/-| /gi, ''); // removes - and spaces from d phonenumber
+    props.registerUser(values, navigate);
   };
 
   return (
@@ -174,4 +193,17 @@ export default function RegisterForm() {
       </Grid>
     </>
   );
-}
+};
+
+RegisterForm.propTypes = {
+  registerUser: PropTypes.func.isRequired,
+  security: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = (state) => ({
+  security: state.security,
+  errors: state.errors
+});
+
+export default connect(mapStateToProps, { registerUser })(RegisterForm);

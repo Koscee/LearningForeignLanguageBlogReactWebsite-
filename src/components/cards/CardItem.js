@@ -6,12 +6,7 @@ import {
   Card as MuiCard,
   CardContent as MuiCardContent,
   CardMedia as MuiCardMedia,
-  // Avatar,
-  // Box,
 } from '@material-ui/core';
-// import CardActionArea from "@material-ui/core/CardActionArea";
-
-// import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import cardStyles from './CardStyles';
 
@@ -37,14 +32,9 @@ const CardItem = (props) => {
           <Typography gutterBottom variant={titleTextVariant} component="h2">
             {title}
           </Typography>
-          <span className={classes.description}>
-            <Typography
-              variant={contentTextVariant}
-              color="textSecondary"
-              dangerouslySetInnerHTML={{ __html: description.slice(0, 150) }}
-            />
-            ...
-          </span>
+          <Typography variant={contentTextVariant} color="textSecondary">
+            { `${description > 150 ? (`${description.slice(0, 150)}...`) : description}`}
+          </Typography>
         </MuiCardContent>
         {children}
       </MuiCard>

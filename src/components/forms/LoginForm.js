@@ -1,6 +1,8 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
@@ -10,6 +12,7 @@ import Logo from '../Logo';
 import Controls from '../controls/Controls';
 import customStyles from './LoginRegisterFormStyles';
 import { useForm, Form } from './useForm';
+import { login } from '../../actions/securityActions';
 
 const useStyles = makeStyles((theme) => (customStyles(theme)));
 
@@ -18,16 +21,31 @@ const initialValues = {
   password: ''
 };
 
-export default function LoginForm() {
+const LoginForm = (props) => {
+  const { errors, security } = props;
+  const navigate = useNavigate();
   const classes = useStyles();
 
   const {
-    values, formErrors, handleInputChange,
+    values, formErrors, setFormErrors, handleInputChange,
   } = useForm(initialValues);
+
+  useEffect(() => {
+    setFormErrors(errors);
+  }, [errors]);
+
+  useEffect(() => {
+    console.log('useEffect runed');
+    if (security.validToken) {
+      // console.log('security', security);
+      // console.log('UseEffectStoreSecurity', store.getState().security);
+      navigate('/home');
+    }
+  }, [security]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(values);
+    props.login(values);
   };
 
   return (
@@ -37,7 +55,7 @@ export default function LoginForm() {
       </Helmet>
       <Grid container direction="column" alignContent="center" sx={{ mx: 4 }}>
         <Grid item className={classes.alignCenter}>
-          <RouterLink to="/">
+          <RouterLink to="/home">
             <Logo className={classes.logo} />
           </RouterLink>
         </Grid>
@@ -104,4 +122,17 @@ export default function LoginForm() {
       </Grid>
     </>
   );
-}
+};
+
+LoginForm.propTypes = {
+  login: PropTypes.func.isRequired,
+  security: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = (state) => ({
+  security: state.security,
+  errors: state.errors
+});
+
+export default connect(mapStateToProps, { login })(LoginForm);

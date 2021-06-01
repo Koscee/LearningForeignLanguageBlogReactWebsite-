@@ -1,47 +1,88 @@
-// import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
+  CircularProgress,
   Grid, makeStyles, Typography,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { useNavigate } from 'react-router';
+import getAllRoles from '../../actions/roleAction';
+import { registerUser } from '../../actions/securityActions';
 
 import Controls from '../controls/Controls';
+import buttonStyles from '../controls/loadButtonStyles';
 import customStyles from '../forms/LoginRegisterFormStyles';
 import { useForm, Form } from '../forms/useForm';
 
 const useStyles = makeStyles((theme) => (customStyles(theme)));
 const shadow = '-1px -1px 10px 2px rgba(0, 0, 0, 0.25)';
+const button = {
+  root: {
+    padding: '13px 0',
+    boxShadow: '0 1px 4px 2px rgba(33, 159, 243, .3)',
+    //   background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
+  },
+};
 
 const genderItems = [
-  { id: 'male', title: 'Male' },
-  { id: 'female', title: 'Female' },
+  { id: 'male', name: 'Male' },
+  { id: 'female', name: 'Female' },
 ];
-const roles = [
-  { id: 'user', title: 'USER' },
-  { id: 'subAdmin', title: 'SUBADMIN' },
-  { id: 'superAdmin', title: 'SUPERADMIN' },
-];
+
 const initialValues = {
   firstName: '',
   lastName: '',
   username: '',
-  email: '',
-  phoneNumber: '',
-  gender: genderItems[0].title,
-  role: roles[0].title,
   password: '',
-  confirmPassword: ''
+  confirmPassword: '',
+  gender: genderItems[0].name,
+  roleName: '',
+  phoneNumber: '',
+  avatarImg: '',
+  email: ''
 };
 
-const AddUserForm = () => {
+const AddUserForm = (props) => {
+  const { roles, errors } = props;
   const classes = useStyles();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   const {
-    values, formErrors, handleInputChange,
+    values, formErrors, setFormErrors, handleInputChange,
   } = useForm(initialValues);
+
+  useEffect(() => {
+    props.getAllRoles();
+  }, [getAllRoles]);
+
+  // const handleSetOptions = () => {
+  //   setValues({ ...values, roleName: roles[2].roleName });
+  // };
+
+  // useEffect(() => {
+  //   console.log(roles[0]);
+  //   handleSetOptions();
+  //   // values.roleName = roles[2].roleName;
+  // }, [roles]);
+
+  useEffect(() => {
+    setFormErrors(errors);
+  }, [errors]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(values);
+    if (!loading) {
+      setSuccess(false);
+      setLoading(true);
+    }
+    const numberStr = values.phoneNumber;
+    values.phoneNumber = numberStr.replace(/-| /gi, ''); // removes - and spaces from d phonenumber
+    props.registerUser(values, navigate, setLoading, setSuccess);
+    // console.log(values);
   };
 
   return (
@@ -102,10 +143,11 @@ const AddUserForm = () => {
 
             <Grid item xs={12} md={6}>
               <Controls.Select
-                name="role"
+                name="roleName"
                 label="Role"
-                value={values.role}
+                value={values.roleName}
                 options={roles}
+                error={formErrors.roleName}
                 onChange={handleInputChange}
               />
             </Grid>
@@ -113,6 +155,7 @@ const AddUserForm = () => {
             <Grid item xs={12} md={6}>
               <Controls.PhoneInput
                 value={values.phoneNumber}
+                error={formErrors.phoneNumber}
                 onChange={handleInputChange}
               />
             </Grid>
@@ -123,6 +166,7 @@ const AddUserForm = () => {
                 label="Gender"
                 value={values.gender}
                 options={genderItems}
+                error={formErrors.gender}
                 onChange={handleInputChange}
               />
             </Grid>
@@ -167,14 +211,27 @@ const AddUserForm = () => {
             </Grid>
 
             <Grid container item xs={12}>
-              <Controls.Buttons.Button
+              {/* <Controls.Buttons.Button
                 text="ADD"
                 marginY={6}
                 paddingY={1.5}
                 fullWidth
                 size="large"
                 type="submit"
-              />
+              /> */}
+              <Grid container sx={{ ...buttonStyles.wrapper, my: 4 }}>
+                <Controls.Buttons.Button
+                  sx={{ ...button.root, ...buttonStyles.buttonSuccess(success) }}
+                  text="ADD"
+                  marginY={6}
+                  paddingY={1.5}
+                  fullWidth
+                  size="large"
+                  type="submit"
+                  disabled={loading}
+                />
+                {loading && <CircularProgress size={25} sx={buttonStyles.buttonProgress} />}
+              </Grid>
             </Grid>
           </Grid>
         </CardContent>
@@ -183,4 +240,16 @@ const AddUserForm = () => {
   );
 };
 
-export default AddUserForm;
+AddUserForm.propTypes = {
+  registerUser: PropTypes.func.isRequired,
+  getAllRoles: PropTypes.func.isRequired,
+  roles: PropTypes.array.isRequired,
+  errors: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  roles: state.role.roles,
+  errors: state.errors
+});
+
+export default connect(mapStateToProps, { registerUser, getAllRoles })(AddUserForm);

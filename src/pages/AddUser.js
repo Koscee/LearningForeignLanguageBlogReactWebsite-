@@ -4,7 +4,7 @@ import {
   Container,
   Grid
 } from '@material-ui/core';
-import AddUserForm from 'src/components/user/AddUserForm';
+import AddUserForm from 'src/components/users/AddUserForm';
 
 const AddUser = () => (
   <>

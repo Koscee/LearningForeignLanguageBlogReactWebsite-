@@ -1,29 +1,44 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-// import { experimentalStyled } from '@material-ui/core';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import HeaderNavBar from './Header';
 // import DashboardSidebar from './DashboardSidebar';
 import SideBar from './SideBar';
 import * as Frame from './LayoutStyles';
-import state from './stateConstants';
+// import state from './stateConstants';
 
-const DashboardLayout = () => {
+const DashboardLayout = (props) => {
+  const { security } = props;
   const [isMobileNavOpen, setMobileNavOpen] = useState(false);
   // const isLoggedIn = true; // later use hooks (useState) or redux to handle change
   // const role = 'subAdmin';
-  const { isLoggedIn, role } = state;
+  // const { isLoggedIn, role } = state;
+
+  console.log('DashboardLayoutSecurity', security);
+
+  const { validToken, user } = security;
+  let userIsAuthenticated;
+
+  if (validToken && user) {
+    userIsAuthenticated = true;
+    console.log(' user is Authenticated');
+  } else {
+    userIsAuthenticated = false;
+    console.log(' useris not Authenticated');
+  }
 
   return (
     <Frame.DashboardLayoutRoot>
       <HeaderNavBar
         onMobileNavOpen={() => setMobileNavOpen(true)}
-        isLoggedIn={isLoggedIn}
+        isLoggedIn={userIsAuthenticated}
       />
       <SideBar
         onMobileClose={() => setMobileNavOpen(false)}
         openMobile={isMobileNavOpen}
-        isLoggedIn={isLoggedIn}
-        role={role}
+        isLoggedIn={userIsAuthenticated}
+        role={user.roleName}
         type="dashboard"
       />
       {/* <DashboardSidebar
@@ -43,4 +58,12 @@ const DashboardLayout = () => {
   );
 };
 
-export default DashboardLayout;
+DashboardLayout.propTypes = {
+  security: PropTypes.object.isRequired
+};
+
+const mapStateToProps = (state) => ({
+  security: state.security
+});
+
+export default connect(mapStateToProps)(DashboardLayout);

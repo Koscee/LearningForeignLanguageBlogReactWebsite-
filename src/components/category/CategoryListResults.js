@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
-  Avatar,
   Box,
   Card,
   Table,
@@ -17,8 +16,12 @@ import {
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { deleteCategory } from '../../actions/categoryAction';
 
-const userListResults = ({ users, ...rest }) => {
+const CategoryListResults = (props) => {
+  const { categories, searchText } = props;
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
 
@@ -30,21 +33,22 @@ const userListResults = ({ users, ...rest }) => {
     setPage(newPage);
   };
 
+  const onDeleteClick = (id) => {
+    props.deleteCategory(id);
+  };
+
   return (
-    <Card {...rest}>
+    <Card>
       <PerfectScrollbar>
         <Box sx={{ minWidth: 1050 }}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>
-                  Name
+                  Category
                 </TableCell>
                 <TableCell>
-                  Email
-                </TableCell>
-                <TableCell>
-                  Registration date
+                  Created date
                 </TableCell>
                 <TableCell align="center">
                   Actions
@@ -52,12 +56,13 @@ const userListResults = ({ users, ...rest }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users
+              {categories
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((user) => (
+                .map((category) => (
+                  category.name.toLowerCase().includes(searchText.toLowerCase()) && (
                   <TableRow
                     hover
-                    key={user.id}
+                    key={category.id}
                   >
                     <TableCell>
                       <Box
@@ -66,34 +71,30 @@ const userListResults = ({ users, ...rest }) => {
                           display: 'flex'
                         }}
                       >
-                        <Avatar
-                          alt={user.name}
-                          src={user.avatarUrl}
-                          sx={{ mr: 2 }}
-                        />
                         <Typography
                           color="textPrimary"
                           variant="body1"
                         >
-                          {user.name}
+                          {category.name}
                         </Typography>
                       </Box>
                     </TableCell>
                     <TableCell>
-                      {user.email}
-                    </TableCell>
-                    <TableCell>
-                      {moment(user.createdAt).format('DD/MM/YYYY')}
+                      {moment(category.created_At).format('DD/MM/YYYY')}
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton style={{ marginRight: 3 }}>
-                        <EditIcon color="primary" />
-                      </IconButton>
-                      <IconButton style={{ marginLeft: 3 }}>
+                      <Link to={`/app/manage/categories/updateCategory/${category.id}`}>
+                        <IconButton style={{ marginRight: 3 }}>
+                          <EditIcon color="secondary" />
+                        </IconButton>
+                      </Link>
+
+                      <IconButton style={{ marginLeft: 3 }} onClick={() => onDeleteClick(category.id)}>
                         <DeleteIcon color="error" />
                       </IconButton>
                     </TableCell>
                   </TableRow>
+                  )
                 ))}
             </TableBody>
           </Table>
@@ -101,7 +102,7 @@ const userListResults = ({ users, ...rest }) => {
       </PerfectScrollbar>
       <TablePagination
         component="div"
-        count={users.length}
+        count={categories.length}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleLimitChange}
         page={page}
@@ -112,8 +113,10 @@ const userListResults = ({ users, ...rest }) => {
   );
 };
 
-userListResults.propTypes = {
-  users: PropTypes.array.isRequired
+CategoryListResults.propTypes = {
+  deleteCategory: PropTypes.func.isRequired,
+  categories: PropTypes.array.isRequired,
+  searchText: PropTypes.string.isRequired,
 };
 
-export default userListResults;
+export default connect(null, { deleteCategory })(CategoryListResults);

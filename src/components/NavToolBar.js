@@ -8,41 +8,26 @@ import {
 } from '@material-ui/core';
 // import MenuIcon from '@material-ui/icons/Menu';
 // import AccountCircle from '@material-ui/icons/AccountCircle';
-
-// import { useState } from 'react';
+import { connect } from 'react-redux';
+import { getCategories } from 'src/actions/categoryAction';
+import { useEffect } from 'react';
 import Logo from './Logo';
 import Controls from './controls/Controls';
 import { itemsList } from './NavListItems';
 import NavTopMenuItem from './HeaderMenu';
-
-// const items = [
-//   {
-//     href: '/home',
-//     title: 'Home'
-//   },
-//   {
-//     href: '/categories',
-//     title: 'Categories',
-//     subNav: [
-//       {
-//         id: 1,
-//         title: 'English'
-//       },
-//       {
-//         id: 2,
-//         title: 'Chinese'
-//       },
-//       {
-//         id: 3,
-//         title: 'Russian'
-//       },
-//     ]
-//   }
-
-// ];
+import categoryNavList from './categoryNavList';
 
 function NavToolBar(props) {
-  const { children, isLoggedIn, ...other } = props;
+  const {
+    children, isLoggedIn, categories
+  } = props;
+
+  useEffect(() => {
+    (async () => {
+      await props.getCategories();
+      categoryNavList[0].subNav = categories;
+    })();
+  }, [categories.length]);
 
   // const [anchorEl, setAnchorEl] = useState(null);
 
@@ -78,25 +63,29 @@ function NavToolBar(props) {
   );
 
   return (
-    <Toolbar {...other}>
+    <Toolbar>
       <RouterLink to="/">
         <Logo />
       </RouterLink>
       <Box sx={{ flexGrow: 1 }} />
-      <Hidden lgDown>
+      <Hidden mdDown>
         <List sx={{ display: 'flex' }}>
           {
           itemsList.mainNav.map((item) => (
             <NavTopMenuItem key={item.title} menuItem={item} />
           ))
         }
+          {
+          categoryNavList && categoryNavList.map((item) => (
+            <NavTopMenuItem key={item.title} menuItem={item} />
+          ))
+        }
         </List>
 
         {/* displasys button if user is not logged in */}
-        {/* {
+        {
            !isLoggedIn ? showLoginAndSignupBtn() : ' '
-        } */}
-        { showLoginAndSignupBtn() }
+        }
 
         {/* use the below code to handle the display of the profile icon when loggedIn */}
         {/* {
@@ -110,9 +99,11 @@ function NavToolBar(props) {
           <AccountCircle />
         </IconButton> */}
         {
-          itemsList.accountNav.map((item) => (
+        isLoggedIn && (
+          itemsList.accountTopNav.map((item) => (
             <NavTopMenuItem key={item.title} menuItem={item} />
           ))
+        )
         }
       </Hidden>
       {children}
@@ -122,7 +113,13 @@ function NavToolBar(props) {
 
 NavToolBar.propTypes = {
   children: PropTypes.any,
-  isLoggedIn: PropTypes.bool
+  isLoggedIn: PropTypes.bool,
+  getCategories: PropTypes.func.isRequired,
+  categories: PropTypes.array.isRequired
 };
 
-export default NavToolBar;
+const mapStateToProps = (state) => ({
+  categories: state.category.categories
+});
+
+export default connect(mapStateToProps, { getCategories })(NavToolBar);

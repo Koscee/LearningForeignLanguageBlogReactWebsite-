@@ -2,6 +2,7 @@
 import React from 'react';
 // import PropTypes from 'prop-types';
 import { Button as MuiButton, makeStyles } from '@material-ui/core';
+// import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(() => ({
 
@@ -49,7 +50,7 @@ export const CreateButton = (props) => {
     <Button
       href={href}
       color={color}
-      component="a"
+      // component="a"
       variant={variant}
       width={width}
       marginY={marginY}

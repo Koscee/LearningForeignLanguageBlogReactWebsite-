@@ -56,7 +56,7 @@ const toolbarOptions = [
     // { indent: '-1' }, { indent: '+1' } // outdent/indent
   ],
   [
-    'link', 'image', 'video', // link, image
+    'link', 'image' // link, image , 'video'
   ],
 
   // [ 'code-block' ] // code-block

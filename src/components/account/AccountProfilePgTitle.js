@@ -1,16 +1,9 @@
-// import moment from 'moment';
 import {
   Box,
-  // Button,
-  // Card,
-  // CardActions,
   Typography,
-  // Divider,
-  // Typography
 } from '@material-ui/core';
-// import ImageUploadButton from '../controls/ImgUploadBtn';
 
-const AccountProfile = () => (
+const AccountProfilePageTitle = () => (
   <Box
     sx={{
       alignItems: 'center',
@@ -24,4 +17,4 @@ const AccountProfile = () => (
   </Box>
 );
 
-export default AccountProfile;
+export default AccountProfilePageTitle;
