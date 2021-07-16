@@ -12,7 +12,7 @@ import Logo from '../Logo';
 import Controls from '../controls/Controls';
 import customStyles from './LoginRegisterFormStyles';
 import { useForm, Form } from './useForm';
-import { registerUser } from '../../actions/securityActions';
+import { registerUser, clearErrors } from '../../actions/securityActions';
 
 const useStyles = makeStyles((theme) => (customStyles(theme)));
 
@@ -41,6 +41,12 @@ const RegisterForm = (props) => {
   } = useForm(initialValues);
 
   useEffect(() => {
+    // console.log('componentDidMount');
+    props.clearErrors();
+  }, []);
+
+  useEffect(() => {
+    // console.log('componentWillUpdate');
     setFormErrors(errors);
   }, [errors]);
 
@@ -197,6 +203,7 @@ const RegisterForm = (props) => {
 
 RegisterForm.propTypes = {
   registerUser: PropTypes.func.isRequired,
+  clearErrors: PropTypes.func.isRequired,
   security: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
@@ -206,4 +213,4 @@ const mapStateToProps = (state) => ({
   errors: state.errors
 });
 
-export default connect(mapStateToProps, { registerUser })(RegisterForm);
+export default connect(mapStateToProps, { registerUser, clearErrors })(RegisterForm);

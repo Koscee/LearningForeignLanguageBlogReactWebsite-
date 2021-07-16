@@ -69,3 +69,10 @@ export const logout = () => (dispatch) => {
     payload: {}
   });
 };
+
+export const clearErrors = () => (dispatch) => {
+  dispatch({
+    type: GET_ERRORS,
+    payload: {}
+  });
+};

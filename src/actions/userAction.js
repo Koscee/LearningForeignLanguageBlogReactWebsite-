@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { Navigate } from 'react-router';
 import {
   GET_USER, GET_USERS, GET_ERRORS, SET_CURRENT_USER, DELETE_USER, GET_ALERT
 } from './types';
@@ -36,7 +35,7 @@ export const updateUser = (id, role, updateRequest, setLoading, setSuccess) => a
     setSuccess(true);
     setLoading(false);
     if (role === 'SUPER_ADMIN') {
-      <Navigate to="/app/manage/users" />;
+      window.location.href = '/app/manage/users';
     } else {
       window.location.href = '/app/account';
     }

@@ -12,7 +12,7 @@ import Logo from '../Logo';
 import Controls from '../controls/Controls';
 import customStyles from './LoginRegisterFormStyles';
 import { useForm, Form } from './useForm';
-import { login } from '../../actions/securityActions';
+import { login, clearErrors } from '../../actions/securityActions';
 
 const useStyles = makeStyles((theme) => (customStyles(theme)));
 
@@ -31,11 +31,17 @@ const LoginForm = (props) => {
   } = useForm(initialValues);
 
   useEffect(() => {
+    // console.log('componentDidMount');
+    props.clearErrors();
+  }, []);
+
+  useEffect(() => {
+    // console.log('componentWillUpdate');
     setFormErrors(errors);
   }, [errors]);
 
   useEffect(() => {
-    console.log('useEffect runed');
+    // console.log('useEffect runed');
     if (security.validToken) {
       // console.log('security', security);
       // console.log('UseEffectStoreSecurity', store.getState().security);
@@ -126,6 +132,7 @@ const LoginForm = (props) => {
 
 LoginForm.propTypes = {
   login: PropTypes.func.isRequired,
+  clearErrors: PropTypes.func.isRequired,
   security: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
@@ -135,4 +142,4 @@ const mapStateToProps = (state) => ({
   errors: state.errors
 });
 
-export default connect(mapStateToProps, { login })(LoginForm);
+export default connect(mapStateToProps, { login, clearErrors })(LoginForm);
